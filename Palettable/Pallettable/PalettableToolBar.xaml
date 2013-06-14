@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="Palettable.PalettableToolBar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    >
+    <ToolBarTray>
+        <ToolBar>
+            <Button Command="ApplicationCommands.Open"
+             ToolTip="Open">
+                <Image Source="Icons/folder_page.png" />
+            </Button>
+            <Button Command="ApplicationCommands.Save"
+             ToolTip="Save">
+                <Image Source="Icons/page_save.png" />
+            </Button>
+        </ToolBar>
+        <ToolBar>
+            <Button x:Name="button_swap"
+                    Command="ApplicationCommands.Cut"
+                ToolTip="Swap">
+                <Image Source="Icons/cut.png" />
+            </Button>
+            <Button x:Name="button_random"
+                Command="ApplicationCommands.Copy"
+                ToolTip="Random">
+                <Image Source="Icons/page_copy.png" />
+            </Button>
+            <ComboBox x:Name="combo_colourBlindness" MinWidth="100" 
+                      ItemsSource="{x:Static Fonts.SystemFontFamilies}"
+                      ToolTip="Colour Blindness" />
+        </ToolBar>
+    </ToolBarTray>
+</UserControl>
