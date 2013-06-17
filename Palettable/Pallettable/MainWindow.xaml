@@ -3,6 +3,21 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Palettable"
     Title="Palettable" Height="440" Width="602" Background="#FF58585C" BorderBrush="#FF58585C">
+
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.New"
+                                 Executed="NewDocument" />
+        <CommandBinding Command="ApplicationCommands.Open"
+                                 Executed="OpenDocument" />
+        <CommandBinding Command="ApplicationCommands.Save"
+                        CanExecute="SaveDocument_CanExecute"
+                                 Executed="SaveDocument" />
+        <CommandBinding Command="ApplicationCommands.SaveAs"
+                                 Executed="SaveDocumentAs" />
+        <CommandBinding Command="ApplicationCommands.Close"
+                                 Executed="ApplicationClose" />
+    </Window.CommandBindings>
+
     <Grid Background="#FF58585C">
         <DockPanel HorizontalAlignment="Stretch" Height="85" VerticalAlignment="Top" Margin="230,0,13,0">
             <local:PalettableToolBar  x:Name="toolbar"  DockPanel.Dock="Top" HorizontalAlignment="Right"/>
@@ -19,7 +34,7 @@
                 <Rectangle Grid.ColumnSpan="1"  HorizontalAlignment="Stretch"  Name="rectangleBarFour"  VerticalAlignment="Stretch" Fill="#FFCD6995" StrokeThickness="0" Margin="2,0" Grid.Column="3" />
             </Grid>
         </DockPanel>
-        <TabControl HorizontalAlignment="Stretch" Name="tabControl1" VerticalAlignment="Stretch" BorderBrush="#FF787A80" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+        <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="#FF787A80" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" SelectionChanged="TabControl_SelectionChanged">
             <TabControl.Resources>
                 <Style TargetType="{x:Type TabItem}">
                     <Setter Property="BorderThickness" Value="0"/>
@@ -30,7 +45,10 @@
                                 <Border x:Name="grid" Background="#FF58585C" BorderThickness="0">
                                     <ContentPresenter>
                                         <ContentPresenter.Content>
-                                            <TextBlock Margin="4" FontSize="15"  Text="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Image Name="img" Height="30" Width="auto" Source="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type TabItem}}, Path=Tag}" />
+                                                <TextBlock Text="{TemplateBinding Content}" Margin="4" VerticalAlignment="Center" FontSize="15" Foreground="White" />
+                                            </StackPanel>
                                         </ContentPresenter.Content>
                                     </ContentPresenter>
                                 </Border>
@@ -46,7 +64,7 @@
                     </Setter>
                 </Style>
             </TabControl.Resources>
-            <TabItem Header="MONO" Height="80" Name="tab_mono" Background="#FF58585C" BorderBrush="#FF58585C" Margin="0,2,0,0" Padding="0">
+            <TabItem Header="MONO" Height="80" Name="tab_mono" Background="#FF58585C" BorderBrush="#FF58585C" Margin="0,2,0,0" Padding="0" Tag="icons/mono.png">
                     <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
@@ -79,22 +97,13 @@
                                 </Setter>
                             </Style>
                         </TabControl.Resources>
-                        <TabItem Header="Colour Wheel" Name="tab_colourWheelMono" Background="#FF787A80" BorderBrush="#FF787A80" Margin="0,2,0,0">
-                            <Grid>
-                                
-                                <Image HorizontalAlignment="Center" Name="image_colourWheelMono" Stretch="Fill" VerticalAlignment="Center" Source="/Palettable;component/Icons/colourWheel.png" ClipToBounds="False" Width="200" Height="200" />
-                                <Ellipse Height="80" HorizontalAlignment="Center" Name="elipse_colourWheelInnerMono" Stroke="White" VerticalAlignment="Center" Width="80" Fill="#FFBD5381" />
-                                <Ellipse Height="150" HorizontalAlignment="Center" Name="elipse_colourWheelTrackMono" Stroke="White" VerticalAlignment="Center" Width="150" />
-                                <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
-                                    <Label Content="RGB" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                                    <TextBox Height="23" HorizontalAlignment="Left" Margin="28,2,0,0" Name="textBox_RGBMono" VerticalAlignment="Top" Width="39" BorderBrush="white" />
-                                </Grid>
-                            </Grid>
+                        <TabItem Header="Colour Wheel" Name="tab_colourWheelMono" Background="#FF787A80" BorderBrush="#FF787A80" Margin="0,2,0,0" Foreground="White">
+                            <local:ColourWheel x:Name="colourWheelMono"/>
                         </TabItem>
-                        <TabItem Header="Colour List" Name="tab_colourListMono" Background="#FF787A80" BorderBrush="#FF787A80" Margin="0,2,0,0" Padding="0">
+                        <TabItem Header="Colour List" Name="tab_colourListMono" Background="#FF787A80" BorderBrush="#FF787A80" Margin="0,2,0,0" Padding="0" Foreground="White">
                             <Grid>
                                 <StackPanel HorizontalAlignment="Stretch" Name="stackPanel_ListMono" VerticalAlignment="Stretch">
-                                    <Label Content="Primary:" Height="28" Name="label_listHeaderPrimaryMono" />
+                                    <Label Content="Primary:" Height="28" Name="label_listHeaderPrimaryMono" Foreground="White" />
                                     <Grid Height="70" Margin="0,0,0,10">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="3*" />
@@ -107,16 +116,16 @@
                                             <ColumnDefinition />
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Name="label_listColourPrimaryMonoOne" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Name="label_listColourPrimaryMonoTwo" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Name="label_listColourPrimaryMonoThree" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Name="label_listColourPrimaryMonoFour" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Name="label_listColourPrimaryMonoFive" VerticalAlignment="Stretch" Padding="0" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleMonoListPrimaryOne" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFBD5381" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleMonoListPrimaryTwo" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFA55478" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="2" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleMonoListPrimaryThree" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF9C3361" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="3" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleMonoListPrimaryFour" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFCD749B" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="4" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleMonoListPrimaryFive" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFCD6995" />
+                                        <Label Content="Label" Grid.Row="1" HorizontalAlignment="Left" Name="label_listColourPrimaryMonoOne" Padding="0" Width="55" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Name="label_listColourPrimaryMonoTwo" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Name="label_listColourPrimaryMonoThree" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Name="label_listColourPrimaryMonoFour" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Name="label_listColourPrimaryMonoFive" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleMonoListPrimaryOne" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFBD5381" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleMonoListPrimaryTwo" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFA55478" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="2" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleMonoListPrimaryThree" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF9C3361" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="3" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleMonoListPrimaryFour" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFCD749B" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="4" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleMonoListPrimaryFive" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFCD6995" />
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -140,7 +149,7 @@
                     </Grid>
                 </Grid>
             </TabItem>
-                <TabItem Header="COMPLEMENT" Height="80" Name="tab_complement" Background="#FF58585C" BorderBrush="#FF58585C" Margin="0,2,0,0">
+                <TabItem Header="COMPLEMENT" Height="80" Name="tab_complement" Background="#FF58585C" BorderBrush="#FF58585C" Margin="0,2,0,0" Tag="icons/complement.png">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
@@ -173,22 +182,13 @@
                                 </Setter>
                             </Style>
                         </TabControl.Resources>
-                        <TabItem Header="Colour Wheel" Name="tab_colourWheelComplement" Background="#FF787A80" BorderBrush="#FF787A80" Margin="0,2,0,0">
-                            <Grid>
-
-                                <Image HorizontalAlignment="Center" Name="image_colourWheelComplement" Stretch="Fill" VerticalAlignment="Center" Source="/Palettable;component/Icons/colourWheel.png" ClipToBounds="False" Width="200" Height="200" />
-                                <Ellipse Height="80" HorizontalAlignment="Center" Name="elipse_colourWheelInnerComplement" Stroke="White" VerticalAlignment="Center" Width="80" Fill="#FFBD5381" />
-                                <Ellipse Height="150" HorizontalAlignment="Center" Name="elipse_colourWheelTrackComplement" Stroke="White" VerticalAlignment="Center" Width="150" />
-                                <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
-                                    <Label Content="RGB" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                                    <TextBox Height="23" HorizontalAlignment="Left" Margin="28,2,0,0" Name="textBox_RGBMComplement" VerticalAlignment="Top" Width="39" BorderBrush="white" />
-                                </Grid>
-                            </Grid>
+                        <TabItem Header="Colour Wheel" Name="tab_colourWheelComplement" Background="#FF787A80" BorderBrush="#FF787A80" Margin="0,2,0,0" Foreground="White">
+                            <local:ColourWheel x:Name="colourWheelComplement"/>
                         </TabItem>
-                        <TabItem Header="Colour List" Name="tab_colourListComplement" Background="#FF787A80" BorderBrush="#FF787A80" Margin="0,2,0,0">
+                        <TabItem Header="Colour List" Name="tab_colourListComplement" Background="#FF787A80" BorderBrush="#FF787A80" Margin="0,2,0,0" Foreground="White">
                             <Grid>
                                 <StackPanel HorizontalAlignment="Stretch" Name="stackPanel_ListComplement" VerticalAlignment="Stretch">
-                                    <Label Content="Primary:" Height="28" Name="label_listHeaderPrimaryComplement" />
+                                    <Label Content="Primary:" Height="28" Name="label_listHeaderPrimaryComplement" Foreground="White" />
                                     <Grid Height="70" Margin="0,0,0,10">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="3*" />
@@ -201,16 +201,16 @@
                                             <ColumnDefinition />
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Name="label_listColourPrimaryComplementOne" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Name="label_listColourPrimaryComplementTwo" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Name="label_listColourPrimaryComplementThree" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Name="label_listColourPrimaryComplementFour" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Name="label_listColourPrimaryComplementFive" VerticalAlignment="Stretch" Padding="0" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListPrimaryOne" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFBD5381" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListPrimaryTwo" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFA55478" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="2" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListPrimaryThree" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF9C3361" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="3" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListPrimaryFour" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFCD749B" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="4" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListPrimaryFive" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFCD6995" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Name="label_listColourPrimaryComplementOne" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Name="label_listColourPrimaryComplementTwo" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Name="label_listColourPrimaryComplementThree" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Name="label_listColourPrimaryComplementFour" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Name="label_listColourPrimaryComplementFive" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListPrimaryOne" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFBD5381" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListPrimaryTwo" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFA55478" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="2" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListPrimaryThree" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF9C3361" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="3" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListPrimaryFour" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFCD749B" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="4" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListPrimaryFive" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFCD6995" />
                                     </Grid>
                                     <Grid Height="70" Margin="0,0,0,10">
                                         <Grid.RowDefinitions>
@@ -224,22 +224,22 @@
                                             <ColumnDefinition />
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Name="label_listColourSecondaryComplementOne" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Name="label_listColourSecondaryComplementTwo" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Name="label_listColourSecondaryComplementThree" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Name="label_listColourSecondaryComplementFour" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Name="label_listColourSecondaryComplementFive" VerticalAlignment="Stretch" Padding="0" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListSecondaryOne" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF9CCC5A" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListSecondaryTwo" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFACD96F" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="2" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListSecondaryThree" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFB1D97B" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="3" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListSecondaryFour" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF79A938" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="4" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListSecondaryFive" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF8EB35B" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Name="label_listColourSecondaryComplementOne" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Name="label_listColourSecondaryComplementTwo" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Name="label_listColourSecondaryComplementThree" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Name="label_listColourSecondaryComplementFour" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Name="label_listColourSecondaryComplementFive" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListSecondaryOne" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF9CCC5A" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListSecondaryTwo" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFACD96F" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="2" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListSecondaryThree" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFB1D97B" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="3" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListSecondaryFour" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF79A938" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="4" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleComplementListSecondaryFive" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF8EB35B" />
                                     </Grid>
                                 </StackPanel>
                             </Grid>
                         </TabItem>
                     </TabControl>
-                    <Grid Grid.Column="1" HorizontalAlignment="Stretch" Name="grid_previewComplement" VerticalAlignment="Stretch" Margin="10">
+                    <Grid Grid.Column="1" HorizontalAlignment="Stretch" Name="grid_previewComplement" VerticalAlignment="Stretch" Margin="10,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="3*" />
                             <RowDefinition />
@@ -279,7 +279,7 @@
                     </Grid>
                 </Grid>
             </TabItem>
-                <TabItem Header="TRIAD" Height="80" Name="tab_triad" Background="#FF58585C" BorderBrush="#FF58585C" Margin="1,2,0,0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
+                <TabItem Header="TRIAD" Height="80" Name="tab_triad" Background="#FF58585C" BorderBrush="#FF58585C" Margin="1,2,0,0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Tag="icons/triad.png" Foreground="White">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
@@ -312,22 +312,13 @@
                                 </Setter>
                             </Style>
                         </TabControl.Resources>
-                        <TabItem Header="Colour Wheel" Name="tab_colourWheelTriad" Background="#FF787A80" BorderBrush="#FF787A80" Margin="0,2,0,0">
-                            <Grid>
-
-                                <Image HorizontalAlignment="Center" Name="image_colourWheelTriad" Stretch="Fill" VerticalAlignment="Center" Source="/Palettable;component/Icons/colourWheel.png" ClipToBounds="False" Width="200" Height="200" />
-                                <Ellipse Height="80" HorizontalAlignment="Center" Name="elipse_colourWheelInnerTriad" Stroke="White" VerticalAlignment="Center" Width="80" Fill="#FFBD5381" />
-                                <Ellipse Height="150" HorizontalAlignment="Center" Name="elipse_colourWheelTrackTriad" Stroke="White" VerticalAlignment="Center" Width="150" />
-                                <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
-                                    <Label Content="RGB" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                                    <TextBox Height="23" HorizontalAlignment="Left" Margin="28,2,0,0" Name="textBox_RGBMTriad" VerticalAlignment="Top" Width="39" BorderBrush="white" />
-                                </Grid>
-                            </Grid>
+                        <TabItem Header="Colour Wheel" Name="tab_colourWheelTriad" Background="#FF787A80" BorderBrush="#FF787A80" Margin="0,2,0,0" Foreground="White">
+                            <local:ColourWheel x:Name="colourWheelTriad"/>
                         </TabItem>
-                        <TabItem Header="Colour List" Name="tab_colourListTriad" Background="#FF787A80" BorderBrush="#FF787A80" Margin="0,2,0,0">
+                        <TabItem Header="Colour List" Name="tab_colourListTriad" Background="#FF787A80" BorderBrush="#FF787A80" Margin="0,2,0,0" Foreground="White">
                             <Grid>
                                 <StackPanel HorizontalAlignment="Stretch" Name="stackPanel_ListTriad" VerticalAlignment="Stretch">
-                                    <Label Content="Primary:" Height="28" Name="label_listHeaderPrimaryTriad" />
+                                    <Label Content="Primary:" Height="28" Name="label_listHeaderPrimaryTriad" Foreground="White" />
                                     <Grid Height="70" Margin="0,0,0,10">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="3*" />
@@ -340,16 +331,16 @@
                                             <ColumnDefinition />
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Name="label_listColourPrimaryTriadOne" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Name="label_listColourPrimaryTriadTwo" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Name="label_listColourPrimaryTriadThree" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Name="label_listColourPrimaryTriadFour" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Name="label_listColourPrimaryTriadFive" VerticalAlignment="Stretch" Padding="0" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListPrimaryOne" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFBD5381" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListPrimaryTwo" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFA55478" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="2" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListPrimaryThree" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF9C3361" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="3" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListPrimaryFour" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFCD749B" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="4" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListPrimaryFive" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFCD6995" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Name="label_listColourPrimaryTriadOne" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Name="label_listColourPrimaryTriadTwo" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Name="label_listColourPrimaryTriadThree" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Name="label_listColourPrimaryTriadFour" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Name="label_listColourPrimaryTriadFive" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListPrimaryOne" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFBD5381" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListPrimaryTwo" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFA55478" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="2" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListPrimaryThree" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF9C3361" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="3" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListPrimaryFour" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFCD749B" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="4" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListPrimaryFive" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFCD6995" />
                                     </Grid>
                                     <Grid Height="70" Margin="0,0,0,10">
                                         <Grid.RowDefinitions>
@@ -363,16 +354,16 @@
                                             <ColumnDefinition />
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Name="label_listColourSecondaryTriadOne" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Name="label_listColourSecondaryTriadTwo" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Name="label_listColourSecondaryTriadThree" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Name="label_listColourSecondaryTriadFour" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Name="label_listColourSecondaryTriadFive" VerticalAlignment="Stretch" Padding="0" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListSecondaryOne" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF48A367" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListSecondaryTwo" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF5FBA7E" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="2" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListSecondaryThree" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF69BA85" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="3" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListSecondaryFour" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF2C874B" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="4" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListSecondaryFive" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF498F61" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Name="label_listColourSecondaryTriadOne" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Name="label_listColourSecondaryTriadTwo" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Name="label_listColourSecondaryTriadThree" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Name="label_listColourSecondaryTriadFour" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Name="label_listColourSecondaryTriadFive" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListSecondaryOne" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF48A367" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListSecondaryTwo" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF5FBA7E" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="2" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListSecondaryThree" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF69BA85" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="3" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListSecondaryFour" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF2C874B" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="4" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListSecondaryFive" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FF498F61" />
                                     </Grid>
                                     <Grid Height="70" Margin="0,0,0,10">
                                         <Grid.RowDefinitions>
@@ -386,22 +377,22 @@
                                             <ColumnDefinition />
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Name="label_listColourTertiaryTriadOne" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Name="label_listColourTertiaryTriadTwo" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Name="label_listColourTertiaryTriadThree" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Name="label_listColourTertiaryTriadFour" VerticalAlignment="Stretch" Padding="0" />
-                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Name="label_listColourTertiaryTriadFive" VerticalAlignment="Stretch" Padding="0" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListTertiaryOne" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFD1DB61" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListTertiaryTwo" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFDBE474" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="2" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListTertiaryThree" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFDCE481" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="3" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListTertiaryFour" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFABB53C" />
-                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="4" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListTertiaryFive" Stroke="Black" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFB8C062" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Name="label_listColourTertiaryTriadOne" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Name="label_listColourTertiaryTriadTwo" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" Name="label_listColourTertiaryTriadThree" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Name="label_listColourTertiaryTriadFour" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Label Content="Label" Grid.ColumnSpan="1" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Name="label_listColourTertiaryTriadFive" VerticalAlignment="Stretch" Padding="0" Foreground="#FFDCDEE4" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="0" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListTertiaryOne" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFD1DB61" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="1" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListTertiaryTwo" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFDBE474" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="2" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListTertiaryThree" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFDCE481" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="3" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListTertiaryFour" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFABB53C" />
+                                        <Rectangle Grid.ColumnSpan="1" Grid.Column="4" Grid.RowSpan="1" HorizontalAlignment="Stretch" Name="rectangleTriadListTertiaryFive" Stroke="white" VerticalAlignment="Stretch" StrokeThickness="0" Fill="#FFB8C062" />
                                     </Grid>
                                 </StackPanel>
                             </Grid>
                         </TabItem>
                     </TabControl>
-                    <Grid Grid.Column="1" HorizontalAlignment="Stretch" Name="grid_previewTriad" VerticalAlignment="Stretch" Margin="10">
+                    <Grid Grid.Column="1" HorizontalAlignment="Stretch" Name="grid_previewTriad" VerticalAlignment="Stretch" Margin="10,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="3*" />
                             <RowDefinition />

@@ -19,7 +19,7 @@ Palettable is the solution.
 
 ##How can I get me some Palettability?
 
-Task away:
+Colour away:
 go get github.com/camerondykeman/Palettable
 
 
